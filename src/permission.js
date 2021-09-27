@@ -26,27 +26,26 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      // determine whether the user has obtained his permission roles through getInfo
-      const hasRoles = store.getters.roles && store.getters.roles.length > 0
-      if (hasRoles) {
+      // 判断是否有从后台请求的菜单，如果有，则不每次都重新获取数据
+      const hasRoutes = store.getters.permission_routes && store.getters.permission_routes.length > 0
+      if (hasRoutes) {
         next()
       } else {
         try {
-          // get user info
-          // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+          // 获取用户信息
           const { roles } = await store.dispatch('user/getInfo')
 
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/getAppMenu', roles)
           console.log(accessRoutes)
-          // dynamically add accessible routes
+          // 添加异步路由
           router.addRoutes(accessRoutes)
 
-          // hack method to ensure that addRoutes is complete
-          // set the replace: true, so the navigation will not leave a history record
+          // hack方法确保addRoutes完成
+          // 动态添加的路由页面一刷新就凉凉了（空白），在地址栏输入其他动态添加的路由又是可以正常跳转的
           next({ ...to, replace: true })
         } catch (error) {
-          // remove token and go to login page to re-login
+          // 删除token并重定向到登录页
           await store.dispatch('user/resetToken')
           console.log(error)
           Message.error(error.message || 'Has Error')

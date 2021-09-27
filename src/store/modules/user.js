@@ -55,6 +55,7 @@ const actions = {
 
         if (!data) {
           reject('Verification failed, please Login again.')
+          return
         }
 
         const { roles, name, avatar } = data

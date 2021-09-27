@@ -30,13 +30,22 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    public: `0.0.0.0:${port}`, // 内联模式下sockjs根据自己猜测的window.location服务进行链接，通过public设置可以指定链接服务以解决sockjs-node的报错
     port: port,
-    open: true,
+    open: false,
     overlay: {
       warnings: false,
       errors: true
     },
-    before: require('./mock/mock-server.js')
+    proxy: {
+      '/api/vue-demo': {
+        target: 'http://42.193.214.94:3000/mock/133/',
+        changOrigin: true,
+        pathRewrite: {
+          '^/api/vue-demo': ''
+        }
+      }
+    }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that

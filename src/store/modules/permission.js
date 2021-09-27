@@ -61,14 +61,12 @@ export const filterRoutes = (routeData) => {
 }
 
 const state = {
-  routes: [],
-  addRoutes: []
+  routes: []
 }
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
-    state.addRoutes = routes
-    state.routes = constantRoutes.concat(routes)
+    state.routes = routes
   }
 }
 
@@ -78,8 +76,7 @@ const actions = {
     const menu = (res || {}).data || []
     const deepCopy = JSON.parse(JSON.stringify(menu)) // 深拷贝数据
     const newRoute = filterRoutes(deepCopy) // 组件化 后台返回的菜单
-    // const allRoute = constantRoutes.concat(newRoute) // 拼接公共路由
-    const allRoute = newRoute // 拼接公共路由
+    const allRoute = constantRoutes.concat(newRoute) // 拼接公共路由
     // 没有路由时的404页面 必须最后一个加 同时防止路由守卫判断进入死循环
     allRoute.push({
       path: '*',

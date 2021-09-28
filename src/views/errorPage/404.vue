@@ -8,7 +8,7 @@
         <el-button type="primary" @click="goHomePage">返回首页</el-button>
       </div>
     </div>
-    
+
   </div>
 </template>
 
@@ -16,7 +16,7 @@
 export default {
   data() {
     return {
-        
+
     }
   },
   methods: {
@@ -80,7 +80,7 @@ export default {
     }
   }
 
-  @media only screen and (max-width: 500px) { 
+  @media only screen and (max-width: 500px) {
     .page-content {
 
       .tips {

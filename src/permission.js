@@ -20,25 +20,25 @@ router.beforeEach(async(to, from, next) => {
   // determine whether the user has logged in
   const hasToken = getToken()
 
-  if (hasToken) {
-    if (to.path === '/login') {
-      // if is logged in, redirect to the home page
+  if (hasToken) { // 判断是否有token
+    if (to.path === '/login') { // 如果访问路由是登陆页，则直接跳转到登录页
       next({ path: '/' })
       NProgress.done()
     } else {
-      // 判断是否有从后台请求的菜单，如果有，则不每次都重新获取数据
+      // 默认模板是根据返回的角色去决定显示哪些菜单
+      // const hasRoles = store.getters.roles && store.getters.roles.length > 0
+
       const hasRoutes = store.getters.permission_routes && store.getters.permission_routes.length > 0
-      if (hasRoutes) {
-        next()
+
+      if (hasRoutes) { // 判断是否有从后台请求的菜单，如果有，则不每次都重新获取数据
+        next() // 当有用户权限的时候，说明所有可访问路由已生成 如访问没权限的全面会自动进入404页面
       } else {
-        try {
-          // 获取用户信息
+        try { // 如果没有权限
+          // 登陆之后获取用户信息
           const { roles } = await store.dispatch('user/getInfo')
 
-          // generate accessible routes map based on roles
+          // 登陆之后获取菜单列表
           const accessRoutes = await store.dispatch('permission/getAppMenu', roles)
-          console.log(accessRoutes)
-          // 添加异步路由
           router.addRoutes(accessRoutes)
 
           // hack方法确保addRoutes完成
@@ -55,13 +55,13 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
-    /* has no token*/
+    // 如果没有token
 
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
+      // 是否在白名单里？【可以添加不需要校验的路由】
       next()
     } else {
-      // other pages that do not have permission to access are redirected to the login page.
+      // 不在白名单？跳转到登陆页并且添加路由参数，登陆成功后会取redirect参数进行router.push
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }

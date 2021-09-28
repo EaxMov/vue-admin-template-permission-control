@@ -48,8 +48,7 @@ module.exports = {
     }
   },
   configureWebpack: {
-    // provide the app's title in webpack's name field, so that
-    // it can be accessed in index.html to inject the correct title.
+    // 指向src目录下，再使用相对路径找文件
     name: name,
     resolve: {
       alias: {

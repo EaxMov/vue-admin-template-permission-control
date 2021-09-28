@@ -72,12 +72,14 @@ const mutations = {
 
 const actions = {
   async getAppMenu({ commit }, roles) { // roles为用户信息获取的角色，如果是路由表是全部返回，需要通过roles去过滤，否则不需要这个参数，通过传token后端直接返回改用户所拥有的路由
+    console.log(asyncRoutes) // 本地异步路由
     const res = await getMenuList()
     const menu = (res || {}).data || []
     const deepCopy = JSON.parse(JSON.stringify(menu)) // 深拷贝数据
     const newRoute = filterRoutes(deepCopy) // 组件化 后台返回的菜单
     const allRoute = constantRoutes.concat(newRoute) // 拼接公共路由
     // 没有路由时的404页面 必须最后一个加 同时防止路由守卫判断进入死循环
+    // 注意事项：这里有一个需要非常注意的地方就是 404 页面一定要最后加载，如果放在constantRouterMap一同声明了404，后面的所以页面都会被拦截到404
     allRoute.push({
       path: '*',
       redirect: '/404',
